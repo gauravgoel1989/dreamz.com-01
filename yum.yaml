@@ -1,0 +1,18 @@
+---
+# This is the playbook for copying yum configuration from source sert to list of hosts.
+
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: su
+#  ansible_become_pass: redhat
+  tasks:
+    # This task is to copy the yum.conf file
+  - name: copy yum.conf file to client
+    template:
+        src=/etc/yum.conf
+        dest=/etc/yum.conf
+        owner=root
+        group=root
+        mode=0644
+        backup=yes

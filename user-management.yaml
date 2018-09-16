@@ -1,0 +1,70 @@
+---
+
+## This is demo playbook for user management (creating user, group and generating ssh key and coping over to other machines and removing user and groups)
+## This playbook uses user, group, authorized_keys, modules.
+
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: su
+  tasks:
+    # This task creates groups
+    - name: create group
+      group:
+        name={{ item }}
+        state=present
+      with_items:
+        - demogrp
+        - demogrp1
+        - demogrp2
+      tags: add_new_group
+    # This task creates users
+    - name: create user
+      user:
+        name={{ item }}
+        state=present
+        groups=demogrp
+        password="$6$vnvWXrp/6mrP9hXc$VR2w3jh0u9klztjTSgfAM4pLUIt/z0nNRqINUwSCKh8IUCerUuUVOsGBLyifCIrjNkZRVBdyssBbC3.O05WTV1"
+        shell=/bin/bash
+      with_items:
+        - demouser1
+        - demouser2
+        - demouser3
+        - demouser4
+      tags: add_new_user
+    # This task generates public key for user
+    - name: generate ssh key for a user
+      user:
+        name={{ item }}
+        generate_ssh_key=yes
+        ssh_key_bits=4096
+        ssh_key_file=.ssh/id_rsa
+      with_items:
+        - demouser1
+      tags: generate_ssh_keys
+    # This task is to copy the public key to other clients
+    - name: copy public keys to remote machines
+      authorized_key:
+        user: demouser1
+        state: present
+        key: "{{ lookup('file', '/home/demouser1/.ssh/id_rsa.pub') }}"
+      tags: copy_pub_key
+    # This task is to delete users
+    - name: delete users
+      user:
+        name={{ item }}
+        state=absent
+      with_items:
+        - demouser2
+        - demouser3
+        - demouser4
+      tags: remove_user
+    # This task is to delete groups
+    - name: delete groups
+      group:
+        name={{ item }}
+        state=absent
+      with_items:
+        - demogrp1
+        - demogrp2
+      tags: remove_group
