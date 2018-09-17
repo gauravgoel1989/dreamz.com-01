@@ -7,8 +7,8 @@
   tasks:
     - name: Provision a new EC2 instance
       ec2:
-        aws_access_key: AKIAI5YMVS3I2CCZN3MA
-        aws_secret_key: 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
+        aws_access_key:
+        aws_secret_key:
         key_name: MyMumbaiKeyPair
         region: ap-south-1
         instance_type: t2.micro
