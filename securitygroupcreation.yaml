@@ -1,0 +1,27 @@
+## Demo playbook for creating Security Group in AWS.
+- hosts: localhost
+  vars:
+#    aws_access_key_id: AKIAI5YMVS3I2CCZN3MA
+#    aws_secret_access_key: 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
+  tasks:
+    - name: Setting up Security Group
+      ec2_group:
+        name: MyDMZ
+        description: Rules Allowing SSH, HTTP & HTTPS from everywhere
+        region: ap-south-1
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
